@@ -4,9 +4,10 @@ const Discord = require('discord.js');
 class Hatchkey extends Discord.Client {
     constructor(options = {}) {
         super();
-        this.reqVars = ["TOKEN", "SERVERID"];
+        this.reqVars = ["TOKEN", "SERVERIDS"];
         this.reqPerms = ['MANAGE_ROLES', 'CHANGE_NICKNAME', 'MANAGE_MESSAGES'];
         this.embColor = '#FFFFFE';
+        this.listCommand = "<<list";
         this.vars = Object.assign({}, process.env, options);
         this._assertVars();
         this._start();
@@ -38,6 +39,13 @@ class Hatchkey extends Discord.Client {
             return;
         }
         
+        let indCnt = 0;
+        if(msg.content.toLowerCase().startsWith(this.listCommand))
+            msg.channel.send("**List of emojis from external servers:**\n" 
+                            + this.emotes.array().map(v => ++indCnt && `${v} ${v.name}${indCnt % 3 == 0 ? '\n' : ''}`)
+                            .join("\t\t").replace(/\n\t\t/g, "\n"), 
+                            {split: true});
+
         let rmsg = msg.content;
 
         for(let emoji of this.emotes.array())
@@ -63,10 +71,14 @@ class Hatchkey extends Discord.Client {
     }
 
     get emotes() {
-        let ownServer = this.guilds.get(process.env.SERVERID);
-        if(!ownServer)
-            throw Error("Can't connect to emoji server");
-        return ownServer.emojis;
+        let emojis = new Discord.Collection();
+        for(let serv of this.vars.SERVERIDS.split(",")) {
+            let ownServer = this.guilds.get(serv);
+            if(!ownServer)
+                throw Error("Can't connect to emoji server: " + serv);
+            emojis = emojis.concat(ownServer.emojis);
+        }
+        return emojis;
     }
 
     embMsg(message, color = this.embColor) {
