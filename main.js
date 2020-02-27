@@ -28,13 +28,13 @@ class Hatchkey extends Discord.Client {
 
     _onReady() {
         console.log("Logged in to Discord as: " + this.user.tag);
-        this.user.setActivity("emotes", "LISTENING");
+        this.user.setActivity("emotes", {type: "LISTENING"});
     }
 
     async _onMessage(msg) {
         if(msg.author.bot || !msg.guild) return;
         if(!msg.guild.members.get(this.user.id).hasPermission(this.reqPerms)) {
-            this.embMsg("Missing required role(s):\n" + this.reqPerms.filter(v => !msg.guild.members.get(this.user.id).permissions.toArray().includes(v)).join("\n"));
+            msg.channel.send(this.embMsg("Missing required role(s):\n" + this.reqPerms.filter(v => !msg.guild.members.get(this.user.id).permissions.toArray().includes(v)).join("\n")));
             return;
         }
         
