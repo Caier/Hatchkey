@@ -1,0 +1,15 @@
+{
+  "name": "hatchkey",
+  "version": "1.0.0",
+  "description": "An emoji bot",
+  "main": "main.js",
+  "dependencies": {
+    "discord.js": "^11.5.1",
+    "dotenv": "^8.2.0"
+  },
+  "scripts": {
+    "start": "node main.js"
+  },
+  "author": "caier",
+  "license": "ISC"
+}
