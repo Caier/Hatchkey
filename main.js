@@ -59,7 +59,7 @@ class Hatchkey extends Discord.Client {
             await msg.guild.roles.find(v => v.name == "HatchColor").setColor((msg.member.colorRole || {}).color);
             await msg.channel.send(rmsg);
             await msg.guild.roles.find(v => v.name == "HatchColor").setColor('#000000');
-            await msg.guild.members.get(this.user.id).setNickname("");
+            //await msg.guild.members.get(this.user.id).setNickname("");
         }
     }
 
