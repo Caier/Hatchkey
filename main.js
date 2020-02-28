@@ -40,11 +40,13 @@ class Hatchkey extends Discord.Client {
         }
         
         let indCnt = 0;
-        if(msg.content.toLowerCase().startsWith(this.listCommand))
+        if(msg.content.toLowerCase().startsWith(this.listCommand)) {
+            await msg.guild.members.get(this.user.id).setNickname("");
             msg.channel.send("**List of emojis from external servers:**\n" 
                             + this.emotes.array().map(v => ++indCnt && `${v} ${v.name}${indCnt % 3 == 0 ? '\n' : ''}`)
                             .join("\t\t").replace(/\n\t\t/g, "\n"), 
                             {split: true});
+        }
 
         let rmsg = msg.content;
 
@@ -59,7 +61,6 @@ class Hatchkey extends Discord.Client {
             await msg.guild.roles.find(v => v.name == "HatchColor").setColor((msg.member.colorRole || {}).color);
             await msg.channel.send(rmsg);
             await msg.guild.roles.find(v => v.name == "HatchColor").setColor('#000000');
-            //await msg.guild.members.get(this.user.id).setNickname("");
         }
     }
 
