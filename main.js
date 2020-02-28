@@ -52,7 +52,7 @@ class Hatchkey extends Discord.Client {
 
         for(let emoji of this.emotes.array())
             if(msg.content.includes(':' + emoji.name))
-                rmsg = rmsg.replace(new RegExp(`:${emoji.name}:?`, 'g'), emoji);
+                rmsg = rmsg.replace(new RegExp(`::${emoji.name}:?`, 'g'), emoji);
         
         if(msg.content != rmsg) {
             await this._setAndCheckRoles(msg);
