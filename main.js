@@ -22,8 +22,8 @@ class Hatchkey extends Discord.Client {
     _start() {
         this.login(this.vars.TOKEN);
         this.on("ready", () => this._onReady());
-        this.on("message", msg => this._onMessage(msg).catch(e => console.error(e)));
-        this.on("error", err => console.error("Websocket error: " + err.message));
+        this.on("message", msg => this._onMessage(msg).catch(e => this._handleError(e)));
+        this.on("error", err => this._handleError("Websocket error: " + err.message));
         this.on("reconnecting", () => console.log("Reconnecting to Discord..."));
     }
 
@@ -63,6 +63,12 @@ class Hatchkey extends Discord.Client {
         }
     }
 
+    _handleError(err) {
+        if(this.logChannel)
+            this.logChannel.send('```' + err + '```').catch(e => {});
+        console.error(err);
+    }
+
     async _setAndCheckRoles(msg) {
         if(!msg.guild.roles.find(v => v.name == 'HatchColor'))
             await msg.guild.createRole({name: "HatchColor"}); 
@@ -79,6 +85,10 @@ class Hatchkey extends Discord.Client {
             emojis = emojis.concat(ownServer.emojis);
         }
         return emojis;
+    }
+
+    get logChannel() {
+        return this.channels.get(this.vars.LOGCHANNEL);
     }
 
     embMsg(message, color = this.embColor) {
