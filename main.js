@@ -8,6 +8,7 @@ class Hatchkey extends Discord.Client {
         this.reqPerms = ['MANAGE_ROLES', 'CHANGE_NICKNAME', 'MANAGE_MESSAGES'];
         this.embColor = '#FFFFFE';
         this.listCommand = "<<list";
+        this.emotePattern = emote => new RegExp(`::${emote}:?`, 'g');
         this.vars = Object.assign({}, process.env, options);
         this._assertVars();
         this._start();
@@ -42,6 +43,7 @@ class Hatchkey extends Discord.Client {
         let indCnt = 0;
         if(msg.content.toLowerCase().startsWith(this.listCommand)) {
             await msg.guild.members.get(this.user.id).setNickname("");
+            await msg.guild.roles.find(v => v.name == "HatchColor").setColor('#000000');
             msg.channel.send("**List of emojis from external servers:**\n" 
                             + this.emotes.array().map(v => ++indCnt && `${v} ${v.name}${indCnt % 3 == 0 ? '\n' : ''}`)
                             .join("\t\t").replace(/\n\t\t/g, "\n"), 
@@ -51,8 +53,8 @@ class Hatchkey extends Discord.Client {
         let rmsg = msg.content;
 
         for(let emoji of this.emotes.array())
-            if(msg.content.includes(':' + emoji.name))
-                rmsg = rmsg.replace(new RegExp(`::${emoji.name}:?`, 'g'), emoji);
+            if(this.emotePattern(emoji.name).test(msg.content))
+                rmsg = rmsg.replace(this.emotePattern(emoji.name), emoji);
         
         if(msg.content != rmsg) {
             await this._setAndCheckRoles(msg);
@@ -88,6 +90,7 @@ class Hatchkey extends Discord.Client {
     }
 
     get logChannel() {
+        if(!this.channels) throw Error("Can't get log channel because none channels are available.")
         return this.channels.get(this.vars.LOGCHANNEL);
     }
 
