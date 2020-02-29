@@ -65,7 +65,7 @@ class Hatchkey extends Discord.Client {
 
     _handleError(err) {
         if(this.logChannel)
-            this.logChannel.send('```' + err + '```').catch(e => {});
+            this.logChannel.send('```' + (err.stack || err) + '```').catch(e => {});
         console.error(err);
     }
 
